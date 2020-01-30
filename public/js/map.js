@@ -6,8 +6,8 @@ mapboxgl.accessToken =
 const map = new mapboxgl.Map({
   container: "map",
   style: "mapbox://styles/mapbox/streets-v11",
-  zoom: 9,
-  center: [-74.006, 40.7128]
+  zoom: 1,
+  center: [-20.7492, 40.4637]
 });
 
 satellite.addEventListener("click", toggleSatellite);
@@ -48,8 +48,7 @@ async function getPlaces() {
       },
       properties: {
         city: place.location.city,
-        icon: "post",
-        description: `You visited this location on ${place.dateVisited}.`
+        description: `Visited on ${place.dateVisited}.`
       }
     };
   });
@@ -60,29 +59,23 @@ async function getPlaces() {
 //Load map with locations
 function loadMap(places) {
   map.on("load", function() {
-    map.addLayer({
-      id: "points",
-      type: "symbol",
-      source: {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: places
-        }
-      },
-      layout: {
-        "icon-image": "{icon}-15",
-        "icon-size": 1.5,
-        "text-field": "{city}",
-        "text-font": ["Open Sans Semibold, Arial Unicode MS Bold"],
-        "text-offset": [0, 0.9],
-        "text-anchor": "top"
-      }
-    });
     map.addSource("mapbox-satellite", {
       type: "raster",
       url: "mapbox://mapbox.satellite",
       tileSize: 256
+    });
+
+    const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+
+    places.forEach(marker => {
+      // create the popup
+      const popup = new mapboxgl.Popup({ offset: 25 }).setText(
+        marker.properties.description
+      );
+      new mapboxgl.Marker({ color: randomColor })
+        .setLngLat(marker.geometry.coordinates)
+        .setPopup(popup)
+        .addTo(map);
     });
 
     map.addControl(new mapboxgl.FullscreenControl());

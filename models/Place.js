@@ -28,7 +28,8 @@ const PlaceSchema = new Schema({
 
   dateVisited: {
     type: Date,
-    required: [true, "Please enter the date you visited your destination"]
+    required: [true, "Please enter the date you visited your destination"],
+    max: Date.now
   }
 });
 
